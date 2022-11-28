@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthStateProvider
 @inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
 @using FinanceDashboard.Shared.DTOs
 
 <div class="background">
@@ -32,6 +33,8 @@
         {
             await LocalStorage.SetItemAsync("token", response.Token);
             await AuthStateProvider.GetAuthenticationStateAsync();
+
+            Navigation.NavigateTo("/");
         }        
     }
 }
