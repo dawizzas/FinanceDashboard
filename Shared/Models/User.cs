@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace BlazorCompleteAuth.Shared.Models;
+namespace FinanceDashboard.Shared.Models;
 
 public class User : IdentityUser
 {

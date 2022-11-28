@@ -1,4 +1,4 @@
-﻿using BlazorCompleteAuth.Shared.Models;
+﻿using FinanceDashboard.Shared.Models;
 
 namespace FinanceDashboard.Shared.DTOs;
 
