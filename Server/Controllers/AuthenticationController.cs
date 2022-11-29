@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using FinanceDashboard.Shared.Models;
 using FinanceDashboard.Shared.DTOs;
 
-namespace BlazorCompleteAuth.Server.Controllers;
+namespace FinanceDashboard.Server.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
