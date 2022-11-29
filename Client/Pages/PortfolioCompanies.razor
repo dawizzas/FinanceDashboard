@@ -1,5 +1,4 @@
-@page "/"
-@page "/searchcompany"
+@page "/portfoliocompanies"
 @inject HttpClient Http
 @using FinanceDashboard.Shared.Models
 @using System.Text.Json.Nodes
@@ -12,13 +11,7 @@
                 <div class="container mt-4">
                     <div class="row d-flex justify-content-center">
                         <div class="col-md-9"> 
-                            <h3 class="heading mt-1 text-center">Search for a company</h3>
-                            <div class="d-flex justify-content-center px-5">
-                                <div class="search"> 
-                                    <input type="text" class="search-input" placeholder="Search..." name="" @bind-value="CurrentQuery"/>
-                                    <a class="search-icon" @onclick="SearchCompanies"><i class="oi oi-magnifying-glass"></i></a>
-                                </div>
-                            </div>
+                            <h3 class="heading mt-1 text-center">Company added to your portfolio</h3>
                         </div>
                     </div>
                 </div>
@@ -35,11 +28,11 @@
                                         <th class="text-center" scope="col">Symbol</th>
                                         <th scope="col">Name</th>
                                         <th scope="col">Financial Data</th>
-                                        <th class="text-center" scope="col">Add to portfolio</th>
+                                        <th class="text-center" scope="col">Remove from portfolio</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var company in SearchedCompanies)
+                                    @foreach (var company in PortfolioCompaniesList)
                                     {
                                         <tr class="inner-box">
                                             <td>
@@ -75,7 +68,7 @@
                                             </td>
                                             <td>
                                                 <div class="primary-btn text-center">
-                                                    <a class="btn btn-primary fd-btn" @onclick="@(() => AddToPortfolio(company))">Add to portfolio</a>
+                                                    <a class="btn btn-danger" @onclick=@(() => RemoveFromPortfolio(company))>Remove from portfolio</a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -92,36 +85,32 @@
 
 @code {
     private string CurrentQuery { get; set; } = string.Empty;
-    private List<Company> SearchedCompanies = new List<Company>();
+    private List<Company> PortfolioCompaniesList = new List<Company>();
     
-    private async Task SearchCompanies()
+    protected override async Task OnInitializedAsync()
     {
-        SearchedCompanies = new List<Company>();
         try {
-            CompanySearchResult compantSearchResults = await Http.GetFromJsonAsync<CompanySearchResult>("api/yahoofinance/search?q=" + CurrentQuery) ?? new CompanySearchResult();
-
-            foreach (var quote in compantSearchResults.Quotes)
+            PortfolioCompaniesList = await Http.GetFromJsonAsync<List<Company>>("api/user/getportfoliocompanies");
+            
+            foreach (var company in PortfolioCompaniesList)
             {
-                Company newCompany = new Company { Symbol = quote.Symbol, Name = quote.LongName };
-                FinancialDataResult quoteResult = await Http.GetFromJsonAsync<FinancialDataResult>("api/yahoofinance/financialdata?symbol=" + newCompany.Symbol) ?? new FinancialDataResult();
-                newCompany.CurrentPrice = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.CurrentPrice.fmt ?? "---";
-                newCompany.RevenueGrowth = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.RevenueGrowth.fmt ?? "---";
-                newCompany.ProfitMargins = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.ProfitMargins.fmt ?? "---";
-                newCompany.Recommendation = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.RecommendationKey ?? "---";
-
-                SearchedCompanies.Add(newCompany);
+                FinancialDataResult quoteResult = await Http.GetFromJsonAsync<FinancialDataResult>("api/yahoofinance/financialdata?symbol=" + company.Symbol) ?? new FinancialDataResult();
+                company.CurrentPrice = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.CurrentPrice.fmt ?? "---";
+                company.RevenueGrowth = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.RevenueGrowth.fmt ?? "---";
+                company.ProfitMargins = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.ProfitMargins.fmt ?? "---";
+                company.Recommendation = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.RecommendationKey ?? "---";
             }
         } catch(Exception ex)
         {
-            SearchedCompanies = new List<Company>();
+            PortfolioCompaniesList = new List<Company>();
             System.Console.WriteLine(ex.Message);
         }
     }
 
-    private async Task AddToPortfolio(Company company)
+    private async Task RemoveFromPortfolio(Company company)
     {
         try {
-            await Http.PutAsJsonAsync("api/user/addcompany", company);
+            await Http.PutAsJsonAsync("api/user/removecompany", company);
         } catch(Exception e)
         {
             System.Console.WriteLine(e.Message);
