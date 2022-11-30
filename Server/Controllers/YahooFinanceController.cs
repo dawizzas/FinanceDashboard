@@ -1,8 +1,10 @@
 using FinanceDashboard.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceDashboard.Server.Controller;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class YahooFinanceController : ControllerBase
