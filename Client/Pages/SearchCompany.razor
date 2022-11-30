@@ -109,7 +109,7 @@
             {
                 Company newCompany = new Company { Symbol = quote.Symbol, Name = quote.LongName };
                 FinanceDashboard.Shared.Models.History newHistory = new FinanceDashboard.Shared.Models.History { Username = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value, 
-                    Company = newCompany };
+                    CompanySymbol = newCompany.Symbol, CompanyName = newCompany.Name };
 
                 FinancialDataResult quoteResult = await Http.GetFromJsonAsync<FinancialDataResult>("api/yahoofinance/financialdata?symbol=" + newCompany.Symbol) ?? new FinancialDataResult();
                 await Http.PostAsJsonAsync<FinanceDashboard.Shared.Models.History>("api/history", newHistory);

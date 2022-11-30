@@ -30,7 +30,7 @@ namespace FinanceDashboard.Server.Controllers
                 return NotFound();
             }
 
-            return await _context.History.Include(h => h.Company).OrderByDescending(h => h.SearchTime)
+            return await _context.History.OrderByDescending(h => h.SearchTime)
                 .Where(h => h.Username == User.Identity.Name).ToListAsync();
         }
 
