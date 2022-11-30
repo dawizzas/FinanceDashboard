@@ -7,6 +7,7 @@
 @using FinanceDashboard.Shared.Models
 @using System.Text.Json.Nodes
 @using System.Text.Json
+@using System.Security.Claims
 
 <div class="event-schedule-area-two bg-color pad100">
     <div class="container">
@@ -99,6 +100,7 @@
     
     private async Task SearchCompanies()
     {
+        var user = (await _stateProvider.GetAuthenticationStateAsync()).User;
         SearchedCompanies = new List<Company>();
         try {
             CompanySearchResult compantSearchResults = await Http.GetFromJsonAsync<CompanySearchResult>("api/yahoofinance/search?q=" + CurrentQuery) ?? new CompanySearchResult();
@@ -106,7 +108,12 @@
             foreach (var quote in compantSearchResults.Quotes)
             {
                 Company newCompany = new Company { Symbol = quote.Symbol, Name = quote.LongName };
+                FinanceDashboard.Shared.Models.History newHistory = new FinanceDashboard.Shared.Models.History { Username = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value, 
+                    Company = newCompany };
+
                 FinancialDataResult quoteResult = await Http.GetFromJsonAsync<FinancialDataResult>("api/yahoofinance/financialdata?symbol=" + newCompany.Symbol) ?? new FinancialDataResult();
+                await Http.PostAsJsonAsync<FinanceDashboard.Shared.Models.History>("api/history", newHistory);
+
                 newCompany.CurrentPrice = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.CurrentPrice.fmt ?? "---";
                 newCompany.RevenueGrowth = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.RevenueGrowth.fmt ?? "---";
                 newCompany.ProfitMargins = quoteResult?.QuoteSummary?.Result?.FirstOrDefault()?.FinancialData.ProfitMargins.fmt ?? "---";
