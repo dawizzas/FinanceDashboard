@@ -36,7 +36,7 @@ namespace FinanceDashboard.Server.Controllers
 
         // GET: api/History/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<History>> GetHistory(int id)
+        public async Task<IActionResult> GetHistory(int id)
         {
           if (_context.History == null)
           {
@@ -49,7 +49,7 @@ namespace FinanceDashboard.Server.Controllers
                 return NotFound();
             }
 
-            return history;
+            return Ok(history);
         }
 
         // PUT: api/History/5

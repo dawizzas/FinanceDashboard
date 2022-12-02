@@ -20,9 +20,20 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="bunit" Version="1.12.6" />
+    <PackageReference Include="Moq" Version="4.18.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.0" />
+    <PackageReference Include="FluentAssertions" Version="6.8.0" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="bunit" />
+    <None Remove="Moq" />
+    <None Remove="Microsoft.EntityFrameworkCore.InMemory" />
+    <None Remove="FluentAssertions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Server\FinanceDashboard.Server.csproj" />
+    <ProjectReference Include="..\Shared\FinanceDashboard.Shared.csproj" />
+    <ProjectReference Include="..\Client\FinanceDashboard.Client.csproj" />
   </ItemGroup>
 </Project>
