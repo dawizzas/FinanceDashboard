@@ -7,8 +7,6 @@ using FinanceDashboard.Shared.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Moq;
 
 namespace FinanceDashboard.Tests;
 
@@ -40,7 +38,5 @@ public class HistoryControllerTests
         // Assert
         notFoundResult.StatusCode.Should().Be(404);
     }
-
-
 }
 
