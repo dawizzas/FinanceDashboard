@@ -67,4 +67,16 @@ public class UserController : ControllerBase
             return Ok(e.Message);
         }
     }
+
+    [HttpGet("getallusers"), Authorize(Roles = "admin")]
+    public async Task<ActionResult<List<User>>> GetAllUsers()
+    {
+        try {
+            List<User> allNonAdminUsers = await _context.Users.Where(u => u.UserName != "admin").ToListAsync();
+            return Ok(allNonAdminUsers);
+        } catch(Exception e)
+        {
+            return Ok(e.Message);
+        }
+    }
 }

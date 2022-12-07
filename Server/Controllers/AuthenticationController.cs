@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using FinanceDashboard.Shared.Models;
 using FinanceDashboard.Shared.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FinanceDashboard.Server.Controller;
 
@@ -89,5 +90,19 @@ public class AuthenticationController : ControllerBase
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
         return jwt;
+    }
+
+    [HttpPut("resetpassword"), Authorize(Roles = "admin")]
+    public async Task<ActionResult> ResetPassword(User user)
+    {
+        try {
+            var currentUser = await _userManager.FindByNameAsync(user.UserName);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(currentUser);
+            var result = await _userManager.ResetPasswordAsync(currentUser, token, "Password@123");
+            return Ok();
+        } catch(Exception e)
+        {
+            return Ok(e.Message);
+        }
     }
 }
