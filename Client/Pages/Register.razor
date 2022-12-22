@@ -7,7 +7,8 @@
 
 <div class="background">
     <h3>Register</h3>
-    <EditForm Model="request" OnSubmit="HandleRegister">
+    <EditForm Model="request" OnValidSubmit="HandleRegister">
+        <DataAnnotationsValidator />
         <label for="username">Username</label>
         <InputText id="username" @bind-Value="request.Username" />
         <label for="password">Password</label>
@@ -15,6 +16,7 @@
         @if(!response.isSuccessful)
         {
             <p style="color: red">@response.Errors</p>
+            <ValidationMessage For="@(() => request.Password)" />
         }
         <button type="submit" class="btn btn-primary">Register</button>
         <NavLink href="/login" class="mt-2">Already have an account? Login</NavLink>

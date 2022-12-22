@@ -26,9 +26,16 @@ public class UserController : ControllerBase
            User currentUser = _context.Users.Include(u => u.PortfolioCompanies).SingleOrDefault<User>(u => u.UserName == User.Identity.Name);
 
            if(currentUser.PortfolioCompanies.Where(c => c.Symbol.ToLower() == CompanyToAdd.Symbol.ToLower()).Count() > 0)
-                return NoContent();
+            {
+                currentUser.PortfolioCompanies.First(c => c.Symbol.ToLower() == CompanyToAdd.Symbol.ToLower()).Quantity = 
+                    currentUser.PortfolioCompanies.First(c => c.Symbol.ToLower() == CompanyToAdd.Symbol.ToLower()).Quantity + CompanyToAdd.Quantity;
+                currentUser.PortfolioCompanies.First(c => c.Symbol.ToLower() == CompanyToAdd.Symbol.ToLower()).CollectiveBuyingPrice = 
+                    currentUser.PortfolioCompanies.First(c => c.Symbol.ToLower() == CompanyToAdd.Symbol.ToLower()).CollectiveBuyingPrice + 
+                    CompanyToAdd.CollectiveBuyingPrice;
+            } else {
+                currentUser.PortfolioCompanies.Add(CompanyToAdd);
+            }
            
-           currentUser.PortfolioCompanies.Add(CompanyToAdd);
             _context.Entry(currentUser).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return NoContent();

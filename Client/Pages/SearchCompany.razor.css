@@ -59,3 +59,9 @@ a:link {
     background-color: #536bf6;
     border-color: #536bf6;
 }
+
+.add-to-portofolio {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}

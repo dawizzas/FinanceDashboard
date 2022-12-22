@@ -45,44 +45,49 @@
                                 <tbody>
                                     @foreach (var company in SearchedCompanies)
                                     {
-                                        <tr class="inner-box">
-                                            <td>
-                                                <div class="r-no text-center">
-                                                    <span>@company.Symbol</span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="r-no">
-                                                    <span>@company.Name</span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="event-wrap">
-                                                    <h3><a>Current Price: @company.CurrentPrice</a></h3>
-                                                    <div class="meta">
-                                                        <div class="revenue-growth">
-                                                            <a>Revenue Growth: @company.RevenueGrowth</a>
-                                                        </div>
-                                                        <div class="profit-margins">
-                                                            <a>Profit Margin: @company.ProfitMargins</a>
-                                                        </div>
-                                                        <div class="recommendation">
-                                                            @if(@company.Recommendation.Contains("buy"))
-                                                            {
-                                                                <span>Recommendation: <span style="color: green;">@company.Recommendation</span></span>
-                                                            } else {
-                                                                <span>Recommendation: <span style="color: red;">@company.Recommendation</span></span>
-                                                            }
+                                        double output;
+                                        @if(double.TryParse(company.CurrentPrice, out output))
+                                        {
+                                            <tr class="inner-box">
+                                                <td>
+                                                    <div class="r-no text-center">
+                                                        <span>@company.Symbol</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="r-no">
+                                                        <span>@company.Name</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="event-wrap">
+                                                        <h3><a>Current Price: @company.CurrentPrice</a></h3>
+                                                        <div class="meta">
+                                                            <div class="revenue-growth">
+                                                                <a>Revenue Growth: @company.RevenueGrowth</a>
+                                                            </div>
+                                                            <div class="profit-margins">
+                                                                <a>Profit Margin: @company.ProfitMargins</a>
+                                                            </div>
+                                                            <div class="recommendation">
+                                                                @if(@company.Recommendation.Contains("buy"))
+                                                                {
+                                                                    <span>Recommendation: <span style="color: green;">@company.Recommendation</span></span>
+                                                                } else {
+                                                                    <span>Recommendation: <span style="color: red;">@company.Recommendation</span></span>
+                                                                }
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="primary-btn text-center">
-                                                    <a class="btn btn-primary fd-btn" @onclick="@(() => AddToPortfolio(company))">Add to portfolio</a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td>
+                                                    <div class="primary-btn text-center add-to-portofolio">
+                                                        <input type="number" placeholder="Quantity" @bind-value="@Quantity" />
+                                                        <a class="btn btn-primary fd-btn" @onclick="@(() => AddToPortfolio(company))">Add to portfolio</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
                                     }
                                 </tbody>
                             </table>
@@ -97,6 +102,7 @@
 @code {
     private string CurrentQuery { get; set; } = string.Empty;
     private List<Company> SearchedCompanies = new List<Company>();
+    private int Quantity { get; set; }
     
     private async Task SearchCompanies()
     {
@@ -131,6 +137,16 @@
     private async Task AddToPortfolio(Company company)
     {
         try {
+            company.Quantity = Quantity;
+            double CurrentPrice;
+
+            if(double.TryParse(company.CurrentPrice, out CurrentPrice))
+            {
+                company.CollectiveBuyingPrice = CurrentPrice * Quantity;
+            } else {
+                company.CollectiveBuyingPrice = -1;
+            }
+
             await Http.PutAsJsonAsync("api/user/addcompany", company);
         } catch(Exception e)
         {

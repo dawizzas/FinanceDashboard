@@ -31,6 +31,8 @@
                                         <th class="text-center" scope="col">Symbol</th>
                                         <th scope="col">Name</th>
                                         <th scope="col">Financial Data</th>
+                                        <th scope="col">Quantity bought</th>
+                                        <th scope="col">Profit/loss</th>
                                         <th class="text-center" scope="col">Remove from portfolio</th>
                                     </tr>
                                 </thead>
@@ -67,6 +69,22 @@
                                                             }
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="r-no">
+                                                    <span>@company.Quantity</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="r-no">
+                                                    @{
+                                                        double currentPriceOfPortfolioCompany;
+                                                        if(double.TryParse(company.CurrentPrice, out currentPriceOfPortfolioCompany))
+                                                        {
+                                                            <span>@(Math.Round(company.CollectiveBuyingPrice - (currentPriceOfPortfolioCompany * company.Quantity),4))</span>
+                                                        }
+                                                    }
                                                 </div>
                                             </td>
                                             <td>

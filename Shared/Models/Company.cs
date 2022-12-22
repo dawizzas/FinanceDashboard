@@ -10,4 +10,6 @@ public class Company
     public string RevenueGrowth { get; set; } = string.Empty;
     public string ProfitMargins { get; set; } = string.Empty;
     public string Recommendation { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public double CollectiveBuyingPrice { get; set; }
 }
