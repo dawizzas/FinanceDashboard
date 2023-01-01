@@ -3,6 +3,7 @@
 @attribute [Authorize]
 
 @inject HttpClient Http
+@inject IToastService toastService
 @using FinanceDashboard.Shared.Models
 @using System.Text.Json.Nodes
 @using System.Text.Json
@@ -131,9 +132,14 @@
     {
         try {
             await Http.PutAsJsonAsync("api/user/removecompany", company);
+
+            PortfolioCompaniesList.Remove(company);
+
+            toastService.ShowSuccess("Removed from portfolio successfully", "Success!");
         } catch(Exception e)
         {
             System.Console.WriteLine(e.Message);
+            toastService.ShowError("An error has occurred", "Error");
         }
     }
 }

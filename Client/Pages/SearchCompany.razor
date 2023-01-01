@@ -4,6 +4,7 @@
 @attribute [Authorize]
 
 @inject HttpClient Http
+@inject IToastService toastService
 @using FinanceDashboard.Shared.Models
 @using System.Text.Json.Nodes
 @using System.Text.Json
@@ -19,7 +20,7 @@
                             <h3 class="heading mt-1 text-center">Search for a company</h3>
                             <div class="d-flex justify-content-center px-5">
                                 <div class="search"> 
-                                    <input type="text" class="search-input" placeholder="Search..." name="" @bind-value="CurrentQuery"/>
+                                    <input type="text" class="search-input" placeholder="Search..." name="" @bind-value="CurrentQuery" />
                                     <a class="search-icon" @onclick="SearchCompanies"><i class="oi oi-magnifying-glass"></i></a>
                                 </div>
                             </div>
@@ -104,6 +105,14 @@
     private List<Company> SearchedCompanies = new List<Company>();
     private int Quantity { get; set; }
     
+    @* private async Task EnterPressed(KeyboardEventArgs e)
+    {
+        if(e.Key == "Enter")
+        {
+            await SearchCompanies();
+        }
+    } *@
+
     private async Task SearchCompanies()
     {
         var user = (await _stateProvider.GetAuthenticationStateAsync()).User;
@@ -148,9 +157,12 @@
             }
 
             await Http.PutAsJsonAsync("api/user/addcompany", company);
+            
+            toastService.ShowSuccess("Company has been added to portfolio", "Success!");
         } catch(Exception e)
         {
             System.Console.WriteLine(e.Message);
+            toastService.ShowError("An error has occurred", "Error");
         }
     }
 }
