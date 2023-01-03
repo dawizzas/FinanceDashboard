@@ -31,7 +31,7 @@ namespace FinanceDashboard.Server.Controllers
             }
 
             return await _context.History.OrderByDescending(h => h.SearchTime)
-                .Where(h => h.Username == User.Identity.Name).ToListAsync();
+                .Where(h => h.Username == User.Claims.FirstOrDefault().Value).ToListAsync();
         }
 
         // GET: api/History/5

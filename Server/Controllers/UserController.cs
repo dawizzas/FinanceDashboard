@@ -23,7 +23,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult> UpdateCompanyPortfolio(Company CompanyToAdd)
     {
        try {
-           User currentUser = _context.Users.Include(u => u.PortfolioCompanies).SingleOrDefault<User>(u => u.UserName == User.Identity.Name);
+           User currentUser = _context.Users.Include(u => u.PortfolioCompanies).SingleOrDefault<User>(u => u.UserName == User.Claims.FirstOrDefault().Value);
 
            if(currentUser.PortfolioCompanies.Where(c => c.Symbol.ToLower() == CompanyToAdd.Symbol.ToLower()).Count() > 0)
             {
@@ -50,7 +50,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult> RemoveCompanyPortfolio(Company CompanyToRemove)
     {
        try {
-           User currentUser = _context.Users.Include(u => u.PortfolioCompanies).SingleOrDefault<User>(u => u.UserName == User.Identity.Name);
+           User currentUser = _context.Users.Include(u => u.PortfolioCompanies).SingleOrDefault<User>(u => u.UserName == User.Claims.FirstOrDefault().Value);
 
            currentUser.PortfolioCompanies.Remove(currentUser.PortfolioCompanies.Find(c => c.Symbol == CompanyToRemove.Symbol));
 
@@ -67,7 +67,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<List<Company>>> GetAllPortfolioCompanies()
     {
         try {
-            User currentUser = _context.Users.Include(u => u.PortfolioCompanies).SingleOrDefault<User>(u => u.UserName == User.Identity.Name);
+            User currentUser = _context.Users.Include(u => u.PortfolioCompanies).SingleOrDefault<User>(u => u.UserName == User.Claims.FirstOrDefault().Value);
             return Ok(currentUser.PortfolioCompanies);
         } catch(Exception e)
         {
