@@ -39,8 +39,14 @@ public class AuthenticationController : ControllerBase
 
         User user = new User
         {
-            UserName = request.Username
+            Email = request.Email,
+            UserName = request.Email
         };
+
+        if(await _userManager.FindByEmailAsync(request.Email) != null)
+        {
+            return Ok(new RegistrationResponseDTO { isSuccessful = false, Errors = "An account with this email address already exists"});
+        }
 
         await _userManager.CreateAsync(user, request.Password);
         if (!await _roleManager.RoleExistsAsync(request.Role))
@@ -54,7 +60,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthenticationResponseDTO>> Login(AuthenticationRequestDTO request)
     {
-        var user = await _userManager.FindByNameAsync(request.Username);
+        var user = await _userManager.FindByEmailAsync(request.Email);
         if (user is null) return new AuthenticationResponseDTO { isSuccessful = false, Errors = "The email or password is incorrect" };
 
         var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
@@ -68,8 +74,7 @@ public class AuthenticationController : ControllerBase
     {
         List<Claim> claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.NameIdentifier, user.UserName)
+            new Claim(ClaimTypes.Email, user.Email)
         };
         foreach(var role in await _userManager.GetRolesAsync(user))
         {
@@ -96,7 +101,7 @@ public class AuthenticationController : ControllerBase
     public async Task<ActionResult> ResetPassword(User user)
     {
         try {
-            var currentUser = await _userManager.FindByNameAsync(user.UserName);
+            var currentUser = await _userManager.FindByEmailAsync(user.Email);
             var token = await _userManager.GeneratePasswordResetTokenAsync(currentUser);
             var result = await _userManager.ResetPasswordAsync(currentUser, token, "Password@123");
             return Ok();

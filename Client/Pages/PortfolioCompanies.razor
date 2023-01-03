@@ -83,7 +83,7 @@
                                                         double currentPriceOfPortfolioCompany;
                                                         if(double.TryParse(company.CurrentPrice, out currentPriceOfPortfolioCompany))
                                                         {
-                                                            <span>@(Math.Round(company.CollectiveBuyingPrice - (currentPriceOfPortfolioCompany * company.Quantity),4))</span>
+                                                            <span>@(Math.Round((currentPriceOfPortfolioCompany * company.Quantity) - company.CollectiveBuyingPrice,4))</span>
                                                         }
                                                     }
                                                 </div>
