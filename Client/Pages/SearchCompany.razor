@@ -83,7 +83,7 @@
                                                 </td>
                                                 <td>
                                                     <div class="primary-btn text-center add-to-portofolio">
-                                                        <input type="number" placeholder="Quantity" @bind-value="@Quantity" />
+                                                        <input type="number" placeholder="Quantity" @bind-value="@company.Quantity" />
                                                         <a class="btn btn-primary fd-btn" @onclick="@(() => AddToPortfolio(company))">Add to portfolio</a>
                                                     </div>
                                                 </td>
@@ -103,7 +103,6 @@
 @code {
     private string CurrentQuery { get; set; } = string.Empty;
     private List<Company> SearchedCompanies = new List<Company>();
-    private int Quantity { get; set; }
     
     @* private async Task EnterPressed(KeyboardEventArgs e)
     {
@@ -151,12 +150,11 @@
     private async Task AddToPortfolio(Company company)
     {
         try {
-            company.Quantity = Quantity;
             double CurrentPrice;
 
             if(double.TryParse(company.CurrentPrice, out CurrentPrice))
             {
-                company.CollectiveBuyingPrice = CurrentPrice * Quantity;
+                company.CollectiveBuyingPrice = CurrentPrice * company.Quantity;
             } else {
                 company.CollectiveBuyingPrice = -1;
             }
